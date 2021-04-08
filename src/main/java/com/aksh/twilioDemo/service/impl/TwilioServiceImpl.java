@@ -3,9 +3,11 @@ package com.aksh.twilioDemo.service.impl;
 import com.aksh.twilioDemo.service.TwilioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.twilio.Twilio;
+import com.twilio.base.ResourceSet;
 import com.twilio.jwt.accesstoken.AccessToken;
 import com.twilio.jwt.accesstoken.VideoGrant;
 import com.twilio.rest.video.v1.Room;
+import com.twilio.rest.video.v1.room.Participant;
 import com.twilio.rest.video.v1.room.participant.SubscribeRules;
 import com.twilio.type.SubscribeRule;
 import com.twilio.type.SubscribeRulesUpdate;
@@ -13,6 +15,8 @@ import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.aksh.twilioDemo.config.TwilioConfig.ACCOUNT_SID;
@@ -56,6 +60,8 @@ import static com.aksh.twilioDemo.config.TwilioConfig.AUTH_TOKEN;
 
     @Override public Boolean startRoom(String roomSid) throws Exception {
 
+        // waiting room concept should be implemented
+
         if (StringUtils.isEmpty(roomSid))
             throw new Exception("Room SID not provided");
 
@@ -66,7 +72,21 @@ import static com.aksh.twilioDemo.config.TwilioConfig.AUTH_TOKEN;
         return true;
     }
 
-    @Override public String generatePresenterToken(String userName, String roomSid)
+    @Override public List<String> getAllActiveRoomIds() throws Exception {
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+
+        List<String> roomIds = new ArrayList<>();
+
+        ResourceSet<Room> inProgressRooms = Room.reader()
+            .setStatus(Room.RoomStatus.IN_PROGRESS).limit(20).read();
+
+        for(Room record : inProgressRooms) {
+            roomIds.add(record.getSid() + " " + record.getUniqueName());
+        }
+        return roomIds; // return list later
+    }
+
+    @Override public String generateToken(String userName, String roomSid)
         throws Exception {
 
          /*
@@ -124,15 +144,9 @@ import static com.aksh.twilioDemo.config.TwilioConfig.AUTH_TOKEN;
             throw new Exception("Publisher Username is not provided");
 
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+//        Participant participant = Participant.updater(roomSid, userName).update();
 
         SubscribeRulesUpdate rules = new SubscribeRulesUpdate(Lists.newArrayList(
-
-            SubscribeRule.builder().withType(SubscribeRule.Type.INCLUDE)
-                .withKind(SubscribeRule.Kind.AUDIO).build(),
-
-            SubscribeRule.builder().withType(SubscribeRule.Type.INCLUDE)
-                .withKind(SubscribeRule.Kind.VIDEO).build(),
-
             SubscribeRule.builder().withType(SubscribeRule.Type.INCLUDE)
                 .withPublisher(publisherUserName).build()));
 

@@ -1,6 +1,6 @@
 package com.aksh.twilioDemo.service;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
 public interface TwilioService {
     String createRoom(String roomName) throws Exception;
@@ -9,7 +9,9 @@ public interface TwilioService {
 
     Boolean startRoom(String roomSid) throws Exception;
 
-    String generatePresenterToken(String userName, String roomSid) throws Exception;
+    List<String> getAllActiveRoomIds() throws Exception;
+
+    String generateToken(String userName, String roomSid) throws Exception;
 
     Boolean addAttendeeToARoom(String userName, String roomSid, String publisherUserName)
         throws Exception;
