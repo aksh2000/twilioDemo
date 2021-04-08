@@ -111,7 +111,7 @@ import static com.aksh.twilioDemo.config.TwilioConfig.AUTH_TOKEN;
         throws Exception {
 
         /*
-        Throw exception if the roomSid provided is not IN-PROGRESS
+        Throw exception if the roomSid provided is not Active or rooms status is not IN-PROGRESS
          */
 
         if (StringUtils.isEmpty(userName))
