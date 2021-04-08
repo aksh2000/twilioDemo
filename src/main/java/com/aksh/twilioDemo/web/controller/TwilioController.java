@@ -56,14 +56,14 @@ import static com.aksh.twilioDemo.web.utils.ApiPath.USER_ID;
         }
     }
 
-    @PostMapping(ROOM + ROOM_ID + TOKEN + USER_ID)
+    @GetMapping(ROOM + ROOM_ID + TOKEN + USER_ID)
     public String generateToken(@PathVariable("roomId") String roomId,
         @PathVariable("userId") String username) {
         try {
             return twilioService.generateToken(username, roomId);
         } catch (Exception e) {
             log.error("error while adding presenter {}", e);
-            return "Failed to fetch presenter token";
+            return "Failed to generate token";
         }
     }
 
